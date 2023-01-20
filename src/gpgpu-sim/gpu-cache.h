@@ -33,6 +33,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <fstream>
+#include <sstream>
 #include "../abstract_hardware_model.h"
 #include "../tr1_hash_map.h"
 #include "gpu-misc.h"
@@ -969,6 +971,8 @@ class tag_array {
   void remove_pending_line(mem_fetch *mf);
   void inc_dirty() { m_dirty++; }
 
+  int get_m_core_id(){ return m_core_id; }
+
  protected:
   // This constructor is intended for use only from derived classes that wish to
   // avoid unnecessary memory allocation that takes place in the
@@ -1466,6 +1470,8 @@ class read_only_cache : public baseline_cache {
 /// Data cache - Implements common functions for L1 and L2 data cache
 class data_cache : public baseline_cache {
  public:
+  bool all;
+  new_addr_type xaddr = 0, xaddr_end = 0, yaddr = 0, yaddr_end = 0;
   data_cache(const char *name, cache_config &config, int core_id, int type_id,
              mem_fetch_interface *memport, mem_fetch_allocator *mfcreator,
              enum mem_fetch_status status, mem_access_type wr_alloc_type,
@@ -1475,6 +1481,37 @@ class data_cache : public baseline_cache {
     m_wr_alloc_type = wr_alloc_type;
     m_wrbk_type = wrbk_type;
     m_gpu = gpu;
+
+    std::string always_hit_in_l1 = std::string(std::getenv("ALWAYS_HIT_IN_L1"));
+    all = always_hit_in_l1 == std::string("*");
+
+    if(!all){
+
+        std::stringstream ss(always_hit_in_l1);
+        std::string item;
+
+        assert(std::getline(ss, item, ':'));
+        xaddr = std::stoull(item, nullptr, 16);
+
+        assert(std::getline(ss, item, ','));
+        xaddr_end = std::stoull(item, nullptr, 16);
+
+        assert(std::getline(ss, item, ':'));
+        yaddr = std::stoull(item, nullptr, 16);
+
+        assert(std::getline(ss, item, ','));
+        yaddr_end = std::stoull(item, nullptr, 16);
+
+        std::ofstream myfile;
+        myfile.open("./debug.log");
+        myfile 
+            << "always_hit_in_l1: " << always_hit_in_l1 << std::endl
+            << "xaddr: " << std::hex << xaddr << std::endl
+            << "xaddr_end: " << std::hex << xaddr_end << std::endl
+            << "yaddr: " << std::hex << yaddr << std::endl
+            << "yaddr_end: " << std::hex << yaddr_end << std::endl;
+        myfile.close();
+    }
   }
 
   virtual ~data_cache() {}
