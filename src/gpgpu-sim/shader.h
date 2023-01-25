@@ -2169,7 +2169,6 @@ class shader_core_ctx : public core_t {
     }
     m_stats->m_active_exu_threads[m_sid]+=active_count;
     m_stats->m_active_exu_warps[m_sid]++;     
-    m_stats->total_fp_count+=active_count;       
   }
    void incfpmul_stat(unsigned active_count,double latency) {
               // printf("FP MUL stat increament\n");
@@ -2181,7 +2180,6 @@ class shader_core_ctx : public core_t {
     }
     m_stats->m_active_exu_threads[m_sid]+=active_count;
     m_stats->m_active_exu_warps[m_sid]++;
-    m_stats->total_fp_count+=active_count;       
    }
    void incfpdiv_stat(unsigned active_count,double latency) {
     if(m_config->gpgpu_clock_gated_lanes==false){
@@ -2192,7 +2190,6 @@ class shader_core_ctx : public core_t {
     }
     m_stats->m_active_exu_threads[m_sid]+=active_count;
     m_stats->m_active_exu_warps[m_sid]++;
-    m_stats->total_fp_count+=active_count;       
    }
    void incdpalu_stat(unsigned active_count,double latency) {
     if(m_config->gpgpu_clock_gated_lanes==false){

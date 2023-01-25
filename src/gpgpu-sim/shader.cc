@@ -3090,6 +3090,9 @@ void warp_inst_t::print(FILE *fout) const {
 }
 void shader_core_ctx::incexecstat(warp_inst_t *&inst)
 {
+    if(inst->is_fp() || inst->is_fpmul() || inst->is_fpdiv()){
+        m_stats->total_fp_count+=inst->active_count();
+    }
     // Latency numbers for next operations are used to scale the power values
     // for special operations, according observations from microbenchmarking
     // TODO: put these numbers in the xml configuration
