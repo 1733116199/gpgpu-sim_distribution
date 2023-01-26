@@ -1197,7 +1197,7 @@ class warp_inst_t : public inst_t {
   unsigned accessq_count() const { return m_accessq.size(); }
   const mem_access_t &accessq_back() { return m_accessq.back(); }
   void accessq_pop_back() { m_accessq.pop_back(); }
-  unsigned long long accessq_total_size(){
+  unsigned long long accessq_total_size() const{
     unsigned long long res = 0;
     for (auto it = m_accessq.begin(); it != m_accessq.end(); ++it) {
         res += it->get_size();
