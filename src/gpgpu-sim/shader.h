@@ -1728,6 +1728,8 @@ struct shader_core_stats_pod {
   double *m_active_exu_threads; //For power model
   double *m_active_exu_warps; //For power model
   unsigned *m_n_diverge;  // number of divergence occurring in this shader
+
+  unsigned long long total_global_ldst_size;
   unsigned gpgpu_n_load_insn;
   unsigned gpgpu_n_store_insn;
   unsigned gpgpu_n_shmem_insn;
@@ -1806,6 +1808,7 @@ class shader_core_stats : public shader_core_stats_pod {
     m_num_fp_acesses =
         (double *)calloc(config->num_shader(), sizeof(double));
     total_fp_count = 0;
+    total_global_ldst_size = 0;
     m_num_imul_acesses =
         (double *)calloc(config->num_shader(), sizeof(double));
     m_num_imul24_acesses =

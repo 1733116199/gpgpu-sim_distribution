@@ -1353,6 +1353,7 @@ void gpgpu_sim::gpu_print_stat() {
   std::string kernel_info_str = executed_kernel_info_string();
   fprintf(statfout, "%s", kernel_info_str.c_str());
   printf("total_fp_count = %llu\n", m_shader_stats->total_fp_count);
+  printf("total_global_ldst_size = %llu\n", m_shader_stats->total_global_ldst_size);
   printf("gpu_sim_cycle = %lld\n", gpu_sim_cycle);
   printf("gpu_sim_insn = %lld\n", gpu_sim_insn);
   printf("gpu_ipc = %12.4f\n", (float)gpu_sim_insn / gpu_sim_cycle);
@@ -1541,6 +1542,9 @@ unsigned gpgpu_sim::threads_per_core() const {
 }
 
 void shader_core_ctx::mem_instruction_stats(const warp_inst_t &inst) {
+  if(inst.space.is_global()){
+    m_stats->total_global_ldst_size += inst.accessq_total_size();
+  }
   unsigned active_count = inst.active_count();
   // this breaks some encapsulation: the is_[space] functions, if you change
   // those, change this.
