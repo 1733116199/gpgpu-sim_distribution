@@ -1470,8 +1470,7 @@ class read_only_cache : public baseline_cache {
 /// Data cache - Implements common functions for L1 and L2 data cache
 class data_cache : public baseline_cache {
  public:
-  bool all, disable;
-  new_addr_type xaddr = 0, xaddr_end = 0, yaddr = 0, yaddr_end = 0;
+  std::vector<std::pair<new_addr_type, new_addr_type>> l1_hits;
   data_cache(const char *name, cache_config &config, int core_id, int type_id,
              mem_fetch_interface *memport, mem_fetch_allocator *mfcreator,
              enum mem_fetch_status status, mem_access_type wr_alloc_type,
@@ -1482,44 +1481,29 @@ class data_cache : public baseline_cache {
     m_wrbk_type = wrbk_type;
     m_gpu = gpu;
 
-    std::string always_hit_in_l1 = std::string(std::getenv("ALWAYS_HIT_IN_L1"));
-    
-    disable = always_hit_in_l1 == std::string("");
-    if(disable){
-        return;
-    }
+    const char *env = std::getenv("ALWAYS_HIT_IN_L1");
+    std::string always_hit_in_l1 = std::string(env ? env : "");
 
-    all = always_hit_in_l1 == std::string("*");
-
-    if(!all){
-
-        std::stringstream ss(always_hit_in_l1);
-        std::string item;
-
-        assert(std::getline(ss, item, ':'));
-        xaddr = std::stoull(item, nullptr, 16);
-
-        assert(std::getline(ss, item, ','));
-        xaddr_end = std::stoull(item, nullptr, 16);
-
-        assert(std::getline(ss, item, ':'));
-        yaddr = std::stoull(item, nullptr, 16);
-
-        assert(std::getline(ss, item, ','));
-        yaddr_end = std::stoull(item, nullptr, 16);
-
+    std::stringstream ss(always_hit_in_l1);
+    std::string item;
+    while (std::getline(ss, item, ',')) {
+      std::stringstream ss2(item);
+      std::string subitem;
+      if (!std::getline(ss2, subitem, ':')) {
+        break;
+      }
+      new_addr_type start = std::stoull(subitem, nullptr, 16);
+      assert(std::getline(ss2, subitem, ':'));
+      new_addr_type end = std::stoull(subitem, nullptr, 16);
+      l1_hits.push_back(std::make_pair(start, end));
     }
 
     std::ofstream myfile;
     myfile.open("./debug.log");
-    myfile 
-        << "disable: " << disable << std::endl
-        << "all: " << all << std::endl
-        << "always_hit_in_l1: " << always_hit_in_l1 << std::endl
-        << "xaddr: " << std::hex << xaddr << std::endl
-        << "xaddr_end: " << std::hex << xaddr_end << std::endl
-        << "yaddr: " << std::hex << yaddr << std::endl
-        << "yaddr_end: " << std::hex << yaddr_end << std::endl;
+    for (auto p : l1_hits) {
+      myfile << "start: 0x" << std::hex << p.first << ", end: 0x" << std::hex
+             << p.second << std::endl;
+    }
     myfile.close();
   }
 

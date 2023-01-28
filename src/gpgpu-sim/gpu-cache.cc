@@ -1752,13 +1752,15 @@ enum cache_request_status data_cache::access(new_addr_type addr, mem_fetch *mf,
                                              unsigned time,
                                              std::list<cache_event> &events) {
   assert(mf->get_data_size() <= m_config.get_atom_sz());
-  if((!disable) && (m_tag_array->get_m_core_id() >= 0)){
-    if ((all) || ((xaddr <= addr) && (addr < xaddr_end)) || ((yaddr <= addr) && (addr < yaddr_end))){
+  if ((!l1_hits.empty()) && (m_tag_array->get_m_core_id() >= 0)) {
+    for (auto &p : l1_hits) {
+      if ((p.first <= addr) && (addr < p.second)) {
         m_stats.inc_stats(mf->get_access_type(),
-                            m_stats.select_stats_status(HIT, HIT));
-        m_stats.inc_stats_pw(mf->get_access_type(), m_stats.select_stats_status(
-                                                        HIT, HIT));
+                          m_stats.select_stats_status(HIT, HIT));
+        m_stats.inc_stats_pw(mf->get_access_type(),
+                             m_stats.select_stats_status(HIT, HIT));
         return HIT;
+      }
     }
   }
   bool wr = mf->get_is_write();
