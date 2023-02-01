@@ -109,6 +109,8 @@ class memory_stats_t {
   unsigned int *L2_dramtoL2writelength;
   unsigned int *L2_L2todramlength;
 
+  unsigned long long offchip_total_bytes;  
+
   // DRAM access row locality stats
   unsigned int *
       *concurrent_row_access;    // concurrent_row_access[dram chip id][bank id]

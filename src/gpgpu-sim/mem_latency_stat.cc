@@ -183,6 +183,7 @@ memory_stats_t::memory_stats_t(unsigned n_shader,
       (unsigned int *)calloc(mem_config->m_n_mem, sizeof(unsigned int));
   L2_L2todramlength =
       (unsigned int *)calloc(mem_config->m_n_mem, sizeof(unsigned int));
+  offchip_total_bytes = 0;
 }
 
 // record the total latency
@@ -220,6 +221,7 @@ void memory_stats_t::memlatstat_read_done(mem_fetch *mf) {
 }
 
 void memory_stats_t::memlatstat_dram_access(mem_fetch *mf) {
+  offchip_total_bytes += mf->get_access_size();
   unsigned dram_id = mf->get_tlx_addr().chip;
   unsigned bank = mf->get_tlx_addr().bk;
   if (m_memory_config->gpgpu_memlatency_stat) {

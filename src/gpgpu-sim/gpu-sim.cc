@@ -1354,6 +1354,7 @@ void gpgpu_sim::gpu_print_stat() {
   fprintf(statfout, "%s", kernel_info_str.c_str());
   printf("total_fp_count = %llu\n", m_shader_stats->total_fp_count);
   printf("total_global_ldst_size = %llu\n", m_shader_stats->total_global_ldst_size);
+  printf("offchip_total_bytes = %llu\n", m_memory_stats->offchip_total_bytes);
   printf("gpu_sim_cycle = %lld\n", gpu_sim_cycle);
   printf("gpu_sim_insn = %lld\n", gpu_sim_insn);
   printf("gpu_ipc = %12.4f\n", (float)gpu_sim_insn / gpu_sim_cycle);
