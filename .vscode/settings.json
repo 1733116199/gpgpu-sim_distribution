@@ -51,6 +51,7 @@
         "tuple": "cpp",
         "typeinfo": "cpp",
         "hash_map": "cpp",
-        "*.tup": "cpp"
+        "*.tup": "cpp",
+        "*.def": "cpp"
     }
 }
