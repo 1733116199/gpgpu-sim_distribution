@@ -1692,6 +1692,7 @@ struct shader_core_stats_pod {
   double *m_num_ialu_acesses;
   double *m_num_fp_acesses;
   unsigned long long total_fp_count;
+  unsigned long * m_num_fp_exec;
   double *m_num_imul_acesses;
   double *m_num_fpmul_acesses;
   double *m_num_idiv_acesses;
@@ -1809,6 +1810,7 @@ class shader_core_stats : public shader_core_stats_pod {
         (double *)calloc(config->num_shader(), sizeof(double));
     total_fp_count = 0;
     total_global_ldst_size = 0;
+    m_num_fp_exec = (unsigned long*)calloc(config->num_shader(), sizeof(unsigned long));
     m_num_imul_acesses =
         (double *)calloc(config->num_shader(), sizeof(double));
     m_num_imul24_acesses =
@@ -1914,6 +1916,7 @@ class shader_core_stats : public shader_core_stats_pod {
     free(m_num_storequeued_insn);
     free(m_num_loadqueued_insn);
     free(m_num_ialu_acesses);
+    free(m_num_fp_exec);
     free(m_num_fp_acesses);
     free(m_num_imul_acesses);
     free(m_num_tex_inst);

@@ -1,2 +1,3 @@
 idle, data hazard, stall: src/gpgpu-sim/shader.cc:1194
 aerialvision print: src/gpgpu-sim/shader.cc:761
+floating point execution: src/gpgpu-sim/shader.cc:3093

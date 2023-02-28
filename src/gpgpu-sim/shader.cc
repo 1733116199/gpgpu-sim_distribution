@@ -860,6 +860,11 @@ void shader_core_stats::visualizer_print(gzFile visualizer_file) {
   for (unsigned i = 0; i < m_config->num_shader(); i++)
     gzprintf(visualizer_file, "%u ", m_n_diverge[i]);
   gzprintf(visualizer_file, "\n");
+  // single precision fp execution per shader core
+  gzprintf(visualizer_file, "shaderfpinsncount:  ");
+  for (unsigned i = 0; i < m_config->num_shader(); i++)
+    gzprintf(visualizer_file, "%lu ", m_num_fp_exec[i]);
+  gzprintf(visualizer_file, "\n");
 }
 
 #define PROGRAM_MEM_START                                      \
@@ -3090,8 +3095,9 @@ void warp_inst_t::print(FILE *fout) const {
 }
 void shader_core_ctx::incexecstat(warp_inst_t *&inst)
 {
-    if(inst->is_fp() || inst->is_fpmul() || inst->is_fpdiv()){
+    if(inst->is_fp() || inst->is_fpmul()){
         m_stats->total_fp_count+=(inst->incount - 1) * inst->active_count();
+        m_stats->m_num_fp_exec[m_sid]+=(inst->incount - 1) * inst->active_count();
     }
     // Latency numbers for next operations are used to scale the power values
     // for special operations, according observations from microbenchmarking

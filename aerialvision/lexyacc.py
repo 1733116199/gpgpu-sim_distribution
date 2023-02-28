@@ -148,6 +148,7 @@ def parseMe(filename):
     # FORMAT: <stat name in GUI>:vc.variable(<Stat Name in Log>, <type>, <reset@kernelstart>, [datatype]) 
     variables = {
         'shaderInsn':vc.variable('shaderinsncount', 2, 0, 'impVec'), 
+        'shaderFpInsn':vc.variable('shaderfpinsncount', 2, 0, 'impVec'), 
         'globalInsn':vc.variable('globalinsncount', 1, 1, 'scalar'), 
         'globalCycle':vc.variable('globalcyclecount', 1, 1, 'scalar'), 
         'shaderWarpDiv':vc.variable('shaderwarpdiv', 2, 0, 'impVec'), 
