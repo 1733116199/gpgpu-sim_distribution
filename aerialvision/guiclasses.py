@@ -67,7 +67,7 @@ import array
 import Tkinter as Tk
 import matplotlib
 matplotlib.use('TkAgg')
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 import matplotlib as mpl
 from matplotlib.colors import colorConverter
@@ -782,7 +782,7 @@ class graphManager:
         #self.plot = self.figure.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(self.figure, master=self.graphArea)
         self.canvas.get_tk_widget().pack()
-        self.toolbar = NavigationToolbar2TkAgg(self.canvas, self.toolbarArea)
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.toolbarArea)
         self.toolbar.update()
         self.plotData()
         
@@ -1102,7 +1102,7 @@ class graphManager:
         for label in self.plot.get_yticklabels():
             label.set_fontsize(plotFormat.yticksFontSize)
      
-        self.canvas.show()
+        self.canvas.draw()
         
     def type4Variable(self, x, xAxis, y, yAxis, plotID):
         keys = y.keys()
@@ -1251,7 +1251,7 @@ class graphManager:
       self.plot.set_title(self.plotFormatInfo[self.currPlot].title)
       self.plot.set_xlabel(self.plotFormatInfo[self.currPlot].xlabel, fontsize = self.plotFormatInfo[self.currPlot].labelFontSize)
       self.plot.set_ylabel(self.plotFormatInfo[self.currPlot].ylabel, fontsize = self.plotFormatInfo[self.currPlot].labelFontSize)
-      self.canvas.show()
+      self.canvas.draw()
     
     
     def plotMultVarLine(self, x, xAxis, y, yAxis):
@@ -1261,7 +1261,7 @@ class graphManager:
       self.plotFormatInfo[self.currPlot].InitLabels(xlabel = xAxis, ylabel = yAxis, cbarlabel = '', title = '')
       self.plot.set_xlabel(self.plotFormatInfo[self.currPlot].xlabel, fontsize = self.plotFormatInfo[self.currPlot].labelFontSize)
       self.plot.set_ylabel(self.plotFormatInfo[self.currPlot].ylabel, fontsize = self.plotFormatInfo[self.currPlot].labelFontSize)
-      self.canvas.show()
+      self.canvas.draw()
 
 
     def plotScatter(self, x, xAxis, y, yAxis, plotID):
@@ -1275,7 +1275,7 @@ class graphManager:
         self.plot.set_title(plotFormat.title, fontsize = plotFormat.labelFontSize)
         self.plot.set_xlabel(plotFormat.xlabel, fontsize = plotFormat.labelFontSize)
         self.plot.set_ylabel(plotFormat.ylabel, fontsize = plotFormat.labelFontSize)
-        self.canvas.show()
+        self.canvas.draw()
       
     
     def takeDerivativeMult(self,x,y):
@@ -1367,10 +1367,13 @@ class graphManager:
         im = self.plot.imshow(y, cmap = cmap, interpolation = interpolation, aspect = 'auto', norm = norm )
         # tmp = im.get_axes().get_position().get_points()
         tmp = im.get_window_extent().get_points()
+        tmp2 = self.figure.get_window_extent().get_points()
 
         if (plotID in self.cbarAxes):
             self.figure.delaxes(self.cbarAxes[plotID])
-        cax = self.figure.add_axes([0.91, tmp[0][1], 0.01, tmp[1][1] - tmp[0][1]])
+        
+        axis_coords = [0.91, tmp[0][1] / tmp2[1][1], 0.04, (tmp[1][1] - tmp[0][1])/tmp2[1][1]]
+        cax = self.figure.add_axes(axis_coords)
         cbar = self.figure.colorbar(im, cax = cax, orientation = 'vertical')
         self.cbarAxes[plotID]= cax  # use for cleanup
         self.colorbars[self.currPlot] = cbar
@@ -1387,7 +1390,7 @@ class graphManager:
         xtickStep = x[1] - x[0]
         self.plot.set_xlim(0 / xtickStep - 0.5, self.xlim / xtickStep + 0.5)
 
-        self.canvas.show()
+        self.canvas.draw()
         
     def updateWilTicks(self, z):
         x= []
@@ -1851,7 +1854,7 @@ class graphManager:
         
         master.destroy()
         ## Now replot with changes.....
-        self.canvas.show()
+        self.canvas.draw()
 
     def zoomButton(self):
         #Variable initializations
@@ -1980,7 +1983,7 @@ class graphManager:
                     plot.set_xticks(xlabelPos)
 
         master.destroy()
-        self.canvas.show()
+        self.canvas.draw()
     
 
 class NaviPlotInfo:
@@ -2232,7 +2235,7 @@ class newTextTab:
         figure = Figure(figsize=(22,5), dpi = 70)
         self.histArea = FigureCanvasTkAgg(figure, master= bottomFrame)
         self.histArea.get_tk_widget().pack()
-        toolbar  = NavigationToolbar2TkAgg(self.histArea, toolbarFrame)
+        toolbar  = NavigationToolbar2Tk(self.histArea, toolbarFrame)
         toolbar.update()
         self.histogram = figure.add_subplot(111)
         cid = figure.canvas.mpl_connect('button_press_event',self.onclick)
